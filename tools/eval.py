@@ -55,6 +55,13 @@ def make_parser():
         help='Fuse conv and bn for testing.',
     )
     parser.add_argument(
+        '--batch_size',
+        dest='batch_size',
+        default=64,
+        type=int,
+        help='Batch size for evaluation',
+    )
+    parser.add_argument(
         '--test',
         dest='test',
         default=False,
@@ -75,8 +82,8 @@ def main():
     args = make_parser().parse_args()
 
     torch.cuda.set_device(args.local_rank)
-    torch.distributed.init_process_group(backend='nccl', init_method='env://')
-    synchronize()
+#     torch.distributed.init_process_group(backend='nccl', init_method='env://')
+#     synchronize()
 
     device = 'cuda'
     config = parse_config(args.config_file)
@@ -117,7 +124,7 @@ def main():
     logger.info('Model Summary: {}'.format(get_model_info(model,
         (infer_shape, infer_shape))))
 
-    model = build_ddp_model(model, local_rank=args.local_rank)
+#     model = build_ddp_model(model, local_rank=args.local_rank)
     if args.fuse:
         logger.info('\tFusing model...')
         model = fuse_model(model)
@@ -134,7 +141,7 @@ def main():
     val_dataset = build_dataset(config, config.dataset.val_ann, is_train=False)
     val_loader = build_dataloader(val_dataset,
                                   config.test.augment,
-                                  batch_size=config.test.batch_size,
+                                  batch_size=args.batch_size,
                                   num_workers=config.miscs.num_workers,
                                   is_train=False,
                                   size_div=32)
