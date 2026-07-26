@@ -1,4 +1,4 @@
-timm
+timm==0.6.13
 omegaconf
 numpy
 opencv_python
@@ -9,3 +9,8 @@ Pillow
 thop
 tabulate
 easydict
+
+matplotlib
+seaborn
+scikit-learn
+ipykernel
